@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static',filename='styles/index.css') }}">
+    <title>Image Manipulator</title>
+</head>
+<body>
+    <header class="header">
+        <h1>Image Manipulator Website</h1>
+    </header>
+    {% if server_error %}
+        <section class="error_modal_base" id= "error_modal_base_section">   
+            <div class="error-card ">
+                <h1>{{server_error}}</h1>
+                <button class="buttons" onclick="document.getElementById('error_modal_base_section').style.display='none'">Okay</button>
+            </div>
+        </section>
+    {% endif %}
+    <form method="POST" enctype="multipart/form-data">
+        <div class="controls">
+            <label class="buttons" for="image">Upload a New Image</label>
+            <input style="display: none;" type="file" name="image" id="image" accept="image/*">
+            <button class="buttons" type="submit" name="change_image">Change Image</button>
+        </div>
+        <br>
+        {% if image_url %}
+            <div class="img-container">
+                <img src="{{ image_url }}" alt="Processed Image">
+            </div>
+            <input type="hidden" name="current_image" value="{{ image_url }}">
+            <input type="hidden" name="original_image" value="{{ image_url }}">
+        {% endif %}
+        <br>
+        <section class="controls">
+            <div class="insert-section">
+                <button class="buttons" type="submit" name="set_color">Set Color Values</button>
+                <label class="labels" for="red_amount">Red Amount:</label>
+                <input class="number-input dark-input" type="number" id="red_amount" name="red_amount" min="0" max="255" value="" placeholder="0-255"><br>
+
+                <label class="labels" for="green_amount">Green Amount:</label>
+                <input class="number-input dark-input" type="number" id="green_amount" name="green_amount" min="0" max="255" value="" placeholder="0-255"><br>
+
+                <label class="labels" for="blue_amount">Blue Amount:</label>
+                <input class="number-input dark-input" type="number" id="blue_amount" name="blue_amount" min="0" max="255" value="" placeholder="0-255"><br>
+            </div>
+
+            <div class="mask-section">
+                <div style="display: flex;">
+                    <button class="buttons" type="submit" name="reset">Reset Image</button>
+                    <button class="buttons" type="submit" name="rotate">Rotate Image</button>
+                </div>
+
+                <div class="insert-section mask-controls">
+                    <div class="mask-control-panel">
+                        <label class="labels" for="mask_size">Mask Size: NxN</label>
+                        <input class="number-input dark-input" type="number" id="mask_size" name="mask_size" min="3" max="7"  placeholder="3-7"><br>
+                        <button class="buttons" type="submit" name="set_mask_settings">Set mask settings</button>
+                    </div>
+                    <div class="mask-container">
+                        {% if mask_settings["status"] %}
+                            {% for row in mask_settings["data"] %}
+                                <div class="mask_row">
+                                {%for col in mask_settings["data"] %}
+                                    <input class="number-input light-input" type="number" placeholder="Insert"><br>
+                                {% endfor %}
+                                </div>
+                            {% endfor %}    
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="insert-section">
+                <label class="buttons in-section-button"  for="little_img">Select Image</label>
+                <input style="display: none;" type="file" name="little_img" id="little_img" accept="image/*">
+                <label class="labels" for="x-coordinate">X-Coordinate:</label>
+                <input class="number-input dark-input" type="number" id="x-coordinate" name="x-coordinate" min="0" max="" value="0"><br>
+                <label class="labels" for="y-coordinate">Y-Coordinate</label>
+                <input class="number-input dark-input" type="number" id="y-coordinate" name="y-coordinate" min="0" max="" value="0"><br>
+                <button class="buttons in-section-button" type="submit" name="insert_img">Insert Image</button>
+            </div>
+        </section>
+    </form>
+    <section class="main-section">
+        <header>
+            <h1>Experiment different filters!</h1>
+            <p>Coming Soon, Filters and kernels interaction!</p>
+        </header>
+        <section class="filter-example-section">
+            <div class="filter-example-container">
+                <div class="example-text-container">
+                    <h1>Blur</h1>
+                    <h3>Blur by getting the weighted sum of all the pixels inside the kernel.</h3>
+                </div>
+                <div class="example-img-container">
+                    <img src="{{ template_images[0] }}" alt="Processed Image" loading="lazy">
+                </div>
+            </div>
+
+            <div class="filter-example-container">
+                <div class="example-text-container">
+                    <h1>CheckerBoard</h1>
+                    <h3>For creative grid-like effects, alternates pixel intensity in a checkerboard pattern.</h3>
+                </div>
+                <div class="example-img-container">
+                    <img src="{{ template_images[1] }}" alt="Processed Image" loading="lazy">
+                </div>
+            </div>
+
+            <div class="filter-example-container">
+                <div class="example-text-container">
+                    <h1>Emboss</h1>
+                    <h3>Creates a 3D-like effect by highlighting edges with a directional light source.</h3>
+                </div>
+                <div class="example-img-container">
+                    <img src="{{ template_images[2] }}" alt="Processed Image" loading="lazy">
+                </div>
+            </div>
+
+            <div class="filter-example-container">
+                <div class="example-text-container">
+                    <h1>High Pass</h1>
+                    <h3>Allows high-frequency details (like edges) to pass through, removing the low-frequency background</h3>
+                </div>
+                <div class="example-img-container">
+                    <img src="{{ template_images[3] }}" alt="Processed Image" loading="lazy">
+                </div>
+            </div>
+            
+            <div class="filter-example-container">
+                <div class="example-text-container">
+                    <h1>Outline</h1>
+                    <h3>Detects edges in all directions with precision.</h3>
+                </div>
+                <div class="example-img-container">
+                    <img src="{{ template_images[4] }}" alt="Processed Image" loading="lazy">
+                </div>
+            </div>
+
+            <div class="filter-example-container">
+                <div class="example-text-container">
+                    <h1>Sharpen</h1>
+                    <h3>Increases contrast between adjacent pixels.</h3>
+                </div>
+                <div class="example-img-container">
+                    <img src="{{ template_images[5] }}" alt="Processed Image" loading="lazy">
+                </div>
+            </div>
+
+            <div class="filter-example-container">
+                <div class="example-text-container">
+                    <h1>Edge Detection X & Y</h1>
+                    <h3>Identifies edges in x direction and y direction.</h3>
+                </div>
+                <div class="example-img-container">
+                    <img src="{{ template_images[6] }}" alt="Processed Image" loading="lazy">
+                </div>
+            </div>
+        </section>
+    </section>
+</body>
+</html>
